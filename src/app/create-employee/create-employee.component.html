@@ -1,22 +1,24 @@
 <h1>Hi {{currentUser.firstName}}!</h1>
 <p>You're logged in to Employee Information Page,Please enter Employee details</p>
-<form #employee="ngForm" (ngSubmit)="saveEmployee(employForm)">
+<form *ngIf="!isSaved" #employeeForm="ngForm" (ngSubmit)="saveEmployee(employeeForm)">
     <div class="panel-panel-primary">
         <div class="panel-heading">
             <h3 class="panel-title">Create Employee</h3>
         </div>
         <div class="panel-body">
-            <div class="form-group" [class.has.error]="firstNameControl.invalid && firstNameControl.touched"
-                [class.has-success]=firstNameControl.valid>
+            <div class="form-group">
                 <label for="firstName">First Name</label>
                 <input required id=firstName name="firstName" [(ngModel)]="firstName" type="text" class="form-control"
                     #firstNameControl="ngModel">
-                <span class="help-block" *ngIf="firstNameControl.invalid && firstNameControl.touched">
-                    Fist Name required
-                </span>
+                <div *ngIf="firstNameControl.invalid && (firstNameControl.dirty || firstNameControl.touched)"
+                    class="alert alert-danger">
+                    <div *ngIf="firstNameControl.errors.required">
+                        First Name is required.
+                    </div>
+                </div>
             </div>
             <div class="form-group">
-                <label for="lasttName">Last Name</label>
+                <label for="lastName">Last Name</label>
                 <input required id=lastName name="lastName" [(ngModel)]="lastName" type="text" class="form-control">
             </div>
             <div class="form-group">
@@ -25,33 +27,80 @@
             </div>
             <div class="form-group">
                 <label for="placeOfBirth">Place of Birth</label>
-                <input required id=placeOfBirth name="placeOfBirth" [(ngModel)]="placeOfBirth" type="text"
-                    class="form-control">
+                <input required id=placeOfBirth name="placeOfBirth" minlength="4" [(ngModel)]="placeOfBirth" type="text"
+                    class="form-control" #pobControl="ngModel">
+                <div *ngIf="pobControl.invalid && (pobControl.dirty || pobControl.touched)" class="alert alert-danger">
+
+                    <div *ngIf="pobControl.errors.required">
+                        Place of Birth is required.
+                    </div>
+                    <div *ngIf="pobControl.errors.minlength">
+                        Place of Birth must be at least 4 characters long.
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
+            <!-- <div class="form-group">
                 <label for="email">Email</label>
-                <input required id=email name="email" [(ngModel)]="email" type="text" class="form-control">
+                <input required id="email" type="text" class="form-control" name="email" [(ngModel)]="email" ngModel
+                    email>
+                <div *ngIf="email.errors?.required && email.touched" class="alert alert-danger">Email is required</div>
+                <div *ngIf="email.errors?.email && email.touched">Email must be a valid email address</div>
+            </div> -->
+
+            <div class="form-group" [class.has-error]="email.invalid && email.touched">
+                <label for="email" class="control-label">Email</label>
+                <input id="email" required email type="text" class="form-control" name="email"
+                    [(ngModel)]="employeeForm.email" #email="ngModel">
+                <div class="alert alert-danger" *ngIf="email.errors?.required && email.touched">
+                    Email is required
+                </div>
+                <div class="alert alert-danger" *ngIf="email.errors?.email && email.touched">
+                    Email is Invalid
+                </div>
             </div>
+
             <div class="form-group">
                 <label for="phoneNumber">Phone Number</label>
-                <input id="phoneNumber" type="text" class="form-control" name="phoneNumber" [(ngModel)]="phoneNumber">
+                <input required id="phoneNumber" type="text" (keypress)="keyPress($event,'Phone')" minlength=10
+                    maxlength=10 class="form-control" name="phoneNumber" [(ngModel)]="phoneNumber">
+                <div class="alert alert-danger" *ngIf="phoneNumber.errors?.required && phoneNumber.touched">
+                    Phone is required
+                </div>
+                <div> </div>
+
             </div>
+            <!-- <div class="form-group">
+                <label for="phoneNumber">Phone Number</label>
+                <input name="phoneNumber" [ngModel]="employeeForm.phoneNumber" [pattern]="phoneNumberPattern" class="form-control"
+                    #phoneNumber="ngModel">
+                <div *ngIf="phoneNumber.errors && employeeForm.submitted && !isValidFormSubmitted" [ngClass]="'error'">
+                    <div *ngIf="phoneNumber.errors.pattern">
+                        Phone no number not valid.
+                    </div>
+                </div>
+            </div> -->
             <div class="form-group">
                 <label for="userName">User Name</label>
-                <input required id=userName name="userName" [(ngModel)]="userName" type="text" class="form-control">
+                <input required id=userName (keypress)="keyPress($event,'')" name="userName" minlength=2 maxlength=25
+                    [(ngModel)]="userName" type="text" class="form-control">
             </div>
             <div class="form-group">
                 <label for="address">Address</label>
-                <input required id=address name="address" [(ngModel)]="address" type="text" class="form-control">
+                <textarea id=address name="address" [(ngModel)]="address" type="text" class="form-control"></textarea>
             </div>
 
             <div class="panel-footer">
-                <button type="submit" class="btn btn-primary" [disabled]="employForm.invalid">Save</button>
+                <button type="submit" class="btn btn-primary" [disabled]="employeeForm.invalid">Save</button>
             </div>
         </div>
     </div>
 </form>
 
+<div *ngIf="isSaved">
+
+    <h1>Employee details saved succesfully.</h1>
+
+</div>
 <!-- 
     To see how many user is logged in .
 <h3>All registered users:</h3>
