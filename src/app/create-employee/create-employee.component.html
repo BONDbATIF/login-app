@@ -1,6 +1,6 @@
 <h1>Hi {{currentUser.firstName}}!</h1>
 <p>You're logged in to Employee Information Page,Please enter Employee details</p>
-<form *ngIf="!isSaved" #employeeForm="ngForm" (ngSubmit)="saveEmployee(employeeForm)">
+<form #employeeForm="ngForm" (ngSubmit)="saveEmployee(employeeForm)">
     <div class="panel-panel-primary">
         <div class="panel-heading">
             <h3 class="panel-title">Create Employee</h3>
@@ -8,23 +8,43 @@
         <div class="panel-body">
             <div class="form-group">
                 <label for="firstName">First Name</label>
-                <input required id=firstName name="firstName" [(ngModel)]="firstName" type="text" class="form-control"
-                    #firstNameControl="ngModel">
-                <div *ngIf="firstNameControl.invalid && (firstNameControl.dirty || firstNameControl.touched)"
+                <input required id=firstName name="firstName" [(ngModel)]="firstName" pattern="[a-zA-Z][a-zA-Z ]+"
+                    type="text" class="form-control" #firstNameControl="ngModel">
+                <!-- <div *ngIf="firstNameControl.invalid && (firstNameControl.dirty || firstNameControl.touched)"
                     class="alert alert-danger">
                     <div *ngIf="firstNameControl.errors.required">
                         First Name is required.
                     </div>
+                    <div *ngIf="!firstNameControl.hasError('pattern')">Only alphabets allowed</div>
+                </div> -->
+
+                <div [hidden]="firstNameControl.valid || firstNameControl.pristine" class="alert alert-danger">
+                    <div [hidden]="!firstNameControl.hasError('required')">First Name is required</div>
+                    <div [hidden]="!firstNameControl.hasError('pattern')">Only alphabets allowed</div>
                 </div>
+
             </div>
             <div class="form-group">
                 <label for="lastName">Last Name</label>
-                <input required id=lastName name="lastName" [(ngModel)]="lastName" type="text" class="form-control">
+                <input required id=lastName name="lastName" [(ngModel)]="lastName" pattern="[a-zA-Z][a-zA-Z ]+"
+                    type="text" class="form-control" #lastNameControl="ngModel">
+                <div [hidden]="lastNameControl.valid || lastNameControl.pristine" class="alert alert-danger">
+                    <div [hidden]="!lastNameControl.hasError('pattern')">Only alphabets allowed</div>
+                </div>
             </div>
             <div class="form-group">
                 <label for="dob">Date of Birth</label>
-                <input required id=dob name="dob" [(ngModel)]="dob" type="text" class="form-control">
+                <input required id=dob name="dob" placeholder='YYYY-MM-DD'
+                    pattern="(?:19|20)[0-9]{2}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-9])|(?:(?!02)(?:0[1-9]|1[0-2])-(?:30))|(?:(?:0[13578]|1[02])-31))"
+                    [(ngModel)]="dob" type="date" (ngModelChange)="validateAge(dob)" class="form-control">
+
+                <div *ngIf=!isAdult class="alert alert-danger">Age should be greater than 18</div>
             </div>
+
+
+            <!-- <input type='date' name='customDate' placeholder='YYYY-MM-DD' pattern="(?:19|20)[0-9]{2}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-9])|(?:(?!02)(?:0[1-9]|1[0-2])-(?:30))|(?:(?:0[13578]|1[02])-31))" > -->
+
+
             <div class="form-group">
                 <label for="placeOfBirth">Place of Birth</label>
                 <input required id=placeOfBirth name="placeOfBirth" minlength="4" [(ngModel)]="placeOfBirth" type="text"
@@ -81,8 +101,12 @@
             </div> -->
             <div class="form-group">
                 <label for="userName">User Name</label>
-                <input required id=userName (keypress)="keyPress($event,'')" name="userName" minlength=2 maxlength=25
-                    [(ngModel)]="userName" type="text" class="form-control">
+                <input required id=userName name="userName" minlength=2 maxlength=25 [(ngModel)]="userName"
+                    (ngModelChange)="validateUserName()" type="text" class="form-control">
+                <div *ngIf="isUserNameExist" class="alert alert-danger">User already exist</div>
+                <div *ngIf="isStartWithSpecChar" class="alert alert-danger">User Name can not be start with special
+                    characters</div>
+
             </div>
             <div class="form-group">
                 <label for="address">Address</label>
@@ -90,17 +114,17 @@
             </div>
 
             <div class="panel-footer">
-                <button type="submit" class="btn btn-primary" [disabled]="employeeForm.invalid">Save</button>
+                <button #btnSubmit type="submit" class="btn btn-primary" [disabled]="employeeForm.invalid">Save</button>
             </div>
         </div>
     </div>
 </form>
 
-<div *ngIf="isSaved">
+<!-- <div *ngIf="isSaved">
 
     <h1>Employee details saved succesfully.</h1>
 
-</div>
+</div> -->
 <!-- 
     To see how many user is logged in .
 <h3>All registered users:</h3>

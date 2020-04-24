@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { first } from 'rxjs/operators';
 
 import { User } from '../_models';
@@ -16,7 +16,15 @@ export class CreateEmployee implements OnInit {
     showPhoneErr: string = "";
     phoneNumberPattern = "/^[a-z0-9](?!.*?[^\na-z0-9]{2}).*?[a-z0-9]$/gmi";
     isValidFormSubmitted = false;
+    isUserNameExist: boolean = false;
     userName: string = "";
+    isAdult: boolean = true;
+    isStartWithSpecChar: boolean = false;
+    employeeData = [];
+    @ViewChild("btnSubmit", { static: true })
+    btnSubmit: ElementRef;
+
+
     constructor(private userService: UserService) {
         this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
     }
@@ -26,18 +34,21 @@ export class CreateEmployee implements OnInit {
         this.isSaved = false;
     }
 
+    // delete Admin user 
     deleteUser(id: number) {
         this.userService.delete(id).pipe(first()).subscribe(() => {
             this.loadAllUsers()
         });
     }
 
+    // to see all users who can add employee details to local storage 
     private loadAllUsers() {
         this.userService.getAll().pipe(first()).subscribe(users => {
             this.users = users;
         });
     }
 
+    // validate phone number ,should not be alphbet 
     keyPress(event: any, whichValidation: string) {
         let pattern = /[0-9\+\-\ ]/;
         let inputChar = String.fromCharCode(event.charCode);
@@ -49,39 +60,58 @@ export class CreateEmployee implements OnInit {
         else {
             pattern = /^[a-z0-9](?!.*?[^\na-z0-9]{2}).*?[a-z0-9]$/gmi
             if (event.keyCode !== 8 && !pattern.test(inputChar)) {
-                this.errorUserName = "User Name can not be start with special characters"
+                this.isStartWithSpecChar = true;
             }
-            this.validateUserName(inputChar);
         }
     }
 
+    // submit empolyee details
     saveEmployee(employee: NgForm) {
-        // this.isValidFormSubmitted = false;
-        // if (employee.invalid) {
-        //     return;
-        // }
-        // this.isValidFormSubmitted = true;
+        this.isAdult = true;
+        this.isStartWithSpecChar = false;
+        this.isUserNameExist = false;
         this.setEmployeeToLocalStorage(employee.form.value);
-        // this.getEmployeeToLocalStorage();
+        this.getEmployeeToLocalStorage();
         employee.resetForm();
     }
-
-    setEmployeeToLocalStorage(employeeData) {
-        localStorage.setItem("employee", JSON.stringify(employeeData));
+    // set employee details to loacl storage 
+    setEmployeeToLocalStorage(employeeData_loc) {
+        this.userName = employeeData_loc["userName"];
+        //this.employeeData.push(employeeData_loc)
+        localStorage.setItem(this.userName, JSON.stringify(employeeData_loc));
         this.isSaved = true;
     }
+
+    // get employee details to loacl storage 
     getEmployeeToLocalStorage() {
         let empData = JSON.parse(localStorage.getItem("employee"));
         return empData;
     }
 
-    validateUserName(inputChar) {
-        if (inputChar === this.getEmployeeToLocalStorage()["userName"]) {
-            return true;
+    // if user name exit disable save button 
+    validateUserName() {
+        if (localStorage[this.userName]) {
+            this.isUserNameExist = true;
+            this.btnSubmit.nativeElement.disabled = true;
         }
         else {
-            return false;
+            this.isUserNameExist = false;
+            this.btnSubmit.nativeElement.disabled = false;
         }
     }
+
+    // validate age ,if less than 18 years show error msg
+    validateAge(birthdate) {
+        if (birthdate) {
+            var ageDifMs = Date.now() - Date.parse(birthdate);
+            var ageDate = new Date(ageDifMs); // miliseconds from epoch
+            let age = Math.abs(ageDate.getUTCFullYear() - 1970);
+            if (age >= 18) this.isAdult = true;
+            else { this.isAdult = false };
+            console.log(age)
+        }
+
+    }
+
 
 }
