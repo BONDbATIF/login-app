@@ -1,0 +1,66 @@
+<h1>Hi {{currentUser.firstName}}!</h1>
+<p>You're logged in to Employee Information Page,Please enter Employee details</p>
+<form #employee="ngForm" (ngSubmit)="saveEmployee(employForm)">
+    <div class="panel-panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">Create Employee</h3>
+        </div>
+        <div class="panel-body">
+            <div class="form-group" [class.has.error]="firstNameControl.invalid && firstNameControl.touched"
+                [class.has-success]=firstNameControl.valid>
+                <label for="firstName">First Name</label>
+                <input required id=firstName name="firstName" [(ngModel)]="firstName" type="text" class="form-control"
+                    #firstNameControl="ngModel">
+                <span class="help-block" *ngIf="firstNameControl.invalid && firstNameControl.touched">
+                    Fist Name required
+                </span>
+            </div>
+            <div class="form-group">
+                <label for="lasttName">Last Name</label>
+                <input required id=lastName name="lastName" [(ngModel)]="lastName" type="text" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="dob">Date of Birth</label>
+                <input required id=dob name="dob" [(ngModel)]="dob" type="text" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="placeOfBirth">Place of Birth</label>
+                <input required id=placeOfBirth name="placeOfBirth" [(ngModel)]="placeOfBirth" type="text"
+                    class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input required id=email name="email" [(ngModel)]="email" type="text" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="phoneNumber">Phone Number</label>
+                <input id="phoneNumber" type="text" class="form-control" name="phoneNumber" [(ngModel)]="phoneNumber">
+            </div>
+            <div class="form-group">
+                <label for="userName">User Name</label>
+                <input required id=userName name="userName" [(ngModel)]="userName" type="text" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="address">Address</label>
+                <input required id=address name="address" [(ngModel)]="address" type="text" class="form-control">
+            </div>
+
+            <div class="panel-footer">
+                <button type="submit" class="btn btn-primary" [disabled]="employForm.invalid">Save</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- 
+    To see how many user is logged in .
+<h3>All registered users:</h3>
+ <ul>
+    <li *ngFor="let user of users">
+        {{user.username}} ({{user.firstName}} {{user.lastName}})
+        - <a (click)="deleteUser(user.id)" class="text-danger">Delete</a>
+    </li>
+</ul>  -->
+<div>
+    <p><a class="btn btn-primary pull-right" [routerLink]="['/login']">Logout</a></p>
+    <div>
