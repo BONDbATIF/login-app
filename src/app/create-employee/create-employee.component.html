@@ -10,24 +10,24 @@
                 <label for="firstName">First Name</label>
                 <input required id=firstName name="firstName" [(ngModel)]="firstName" pattern="[a-zA-Z][a-zA-Z ]+"
                     type="text" class="form-control" #firstNameControl="ngModel">
-                <!-- <div *ngIf="firstNameControl.invalid && (firstNameControl.dirty || firstNameControl.touched)"
+                <div *ngIf="firstNameControl.invalid && (firstNameControl.dirty || firstNameControl.touched)"
                     class="alert alert-danger">
                     <div *ngIf="firstNameControl.errors.required">
                         First Name is required.
                     </div>
                     <div *ngIf="!firstNameControl.hasError('pattern')">Only alphabets allowed</div>
-                </div> -->
+                </div>
 
-                <div [hidden]="firstNameControl.valid || firstNameControl.pristine" class="alert alert-danger">
+                <!-- <div [hidden]="firstNameControl.valid || firstNameControl.pristine" class="alert alert-danger">
                     <div [hidden]="!firstNameControl.hasError('required')">First Name is required</div>
                     <div [hidden]="!firstNameControl.hasError('pattern')">Only alphabets allowed</div>
-                </div>
+                </div> -->
 
             </div>
             <div class="form-group">
                 <label for="lastName">Last Name</label>
-                <input required id=lastName name="lastName" [(ngModel)]="lastName" pattern="[a-zA-Z][a-zA-Z ]+"
-                    type="text" class="form-control" #lastNameControl="ngModel">
+                <input id=lastName name="lastName" [(ngModel)]="lastName" pattern="[a-zA-Z][a-zA-Z ]+" type="text"
+                    class="form-control" #lastNameControl="ngModel">
                 <div [hidden]="lastNameControl.valid || lastNameControl.pristine" class="alert alert-danger">
                     <div [hidden]="!lastNameControl.hasError('pattern')">Only alphabets allowed</div>
                 </div>
@@ -38,7 +38,7 @@
                     pattern="(?:19|20)[0-9]{2}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-9])|(?:(?!02)(?:0[1-9]|1[0-2])-(?:30))|(?:(?:0[13578]|1[02])-31))"
                     [(ngModel)]="dob" type="date" (ngModelChange)="validateAge(dob)" class="form-control">
 
-                <div *ngIf=!isAdult class="alert alert-danger">Age should be greater than 18</div>
+                <div *ngIf=!isAdult class="alert alert-danger">Age should be greater than 18 years</div>
             </div>
 
 
@@ -103,7 +103,8 @@
                 <label for="userName">User Name</label>
                 <input required id=userName name="userName" minlength=2 maxlength=25 [(ngModel)]="userName"
                     (ngModelChange)="validateUserName()" type="text" class="form-control">
-                <div *ngIf="isUserNameExist" class="alert alert-danger">User already exist</div>
+                <div *ngIf="isUserNameExistOrEmpty" class="alert alert-danger">{{userError}}</div>
+
                 <div *ngIf="isStartWithSpecChar" class="alert alert-danger">User Name can not be start with special
                     characters</div>
 

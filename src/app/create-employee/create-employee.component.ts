@@ -16,13 +16,14 @@ export class CreateEmployee implements OnInit {
     showPhoneErr: string = "";
     phoneNumberPattern = "/^[a-z0-9](?!.*?[^\na-z0-9]{2}).*?[a-z0-9]$/gmi";
     isValidFormSubmitted = false;
-    isUserNameExist: boolean = false;
+    isUserNameExistOrEmpty: boolean = false;
     userName: string = "";
     isAdult: boolean = true;
     isStartWithSpecChar: boolean = false;
     employeeData = [];
     @ViewChild("btnSubmit", { static: true })
     btnSubmit: ElementRef;
+    userError:string="";
 
 
     constructor(private userService: UserService) {
@@ -69,7 +70,7 @@ export class CreateEmployee implements OnInit {
     saveEmployee(employee: NgForm) {
         this.isAdult = true;
         this.isStartWithSpecChar = false;
-        this.isUserNameExist = false;
+        this.isUserNameExistOrEmpty = false;
         this.setEmployeeToLocalStorage(employee.form.value);
         this.getEmployeeToLocalStorage();
         employee.resetForm();
@@ -91,11 +92,17 @@ export class CreateEmployee implements OnInit {
     // if user name exit disable save button 
     validateUserName() {
         if (localStorage[this.userName]) {
-            this.isUserNameExist = true;
+            this.isUserNameExistOrEmpty = true;
+            this.userError="User already exist"
             this.btnSubmit.nativeElement.disabled = true;
         }
+        else if (this.userName == "") {
+            this.isUserNameExistOrEmpty = true;
+            this.btnSubmit.nativeElement.disabled = true;
+            this.userError="User is required."
+        }
         else {
-            this.isUserNameExist = false;
+            this.isUserNameExistOrEmpty = false;
             this.btnSubmit.nativeElement.disabled = false;
         }
     }
